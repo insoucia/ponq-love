@@ -13,9 +13,9 @@ function love.load()
     math.randomseed(os.time())
     love.graphics.setDefaultFilter('nearest','nearest')
     
-    smallfont = love.graphics.newFont('pixel-font.ttf', 8)
+    smallfont = love.graphics.newFont('/fonts/PixelifySans-Medium.ttf')
     
-    scorefont = love.graphics.newFont('pixel-font.ttf', 32)
+    scorefont = love.graphics.newFont('fonts/PixelifySans-Bold.ttf', 32)
     
     player1Score=0
     player2Score=0

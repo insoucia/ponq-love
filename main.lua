@@ -6,10 +6,13 @@ VIRTUAL_HEIGHT=243
 
 PADDLE_SPEED = 200
 
+Class = require 'class'
 push = require 'push'
+require 'Paddle'
+require 'Ball'
 
 function love.load()
-
+    love.window.setTitle('ponq')
     math.randomseed(os.time())
     love.graphics.setDefaultFilter('nearest','nearest')
     
@@ -20,15 +23,10 @@ function love.load()
     player1Score=0
     player2Score=0
 
-    player1Y =30
-    player2Y= VIRTUAL_HEIGHT-50
-
-    ballX = VIRTUAL_WIDTH/2-2
-    ballY = VIRTUAL_HEIGHT/2-2
-
-    ballDX = math.random(2) == 1 and -100 or 100
-    ballDY= math.random(-50,50)
-
+    paddle1 =Paddle(5,20,5,20)
+    paddle2 =Paddle(VIRTUAL_WIDTH -10, VIRTUAL_HEIGHT-30,5,20)
+    ball =Ball(VIRTUAL_WIDTH/2-2,VIRTUAL_HEIGHT/2-2)
+    
     gamestate = 'start'
 
 
@@ -40,21 +38,29 @@ function love.load()
 end
 
 function love.update(dt)
+
+    paddle1:update(dt)
+    paddle2:update(dt)
+
     if love.keyboard.isDown('w') then
-        player1Y= math.max(1, player1Y-PADDLE_SPEED * dt)
+        paddle1.dy = -PADDLE_SPEED
     elseif love.keyboard.isDown('s') then
-        player1Y= math.min(VIRTUAL_HEIGHT-22,player1Y+PADDLE_SPEED * dt)
+        paddle1.dy = PADDLE_SPEED
+    else
+        paddle1.dy = 0
     end
 
     if love.keyboard.isDown('up') then
-        player2Y= math.max(1,player2Y-PADDLE_SPEED * dt)
+        paddle2.dy = -PADDLE_SPEED
     elseif love.keyboard.isDown('down') then
-        player2Y= math.min(VIRTUAL_HEIGHT-22,player2Y+PADDLE_SPEED * dt)
+        paddle2.dy =PADDLE_SPEED
+    else
+        paddle2.dy = 0
+    
     end    
 
     if gamestate == 'play' then
-        ballX = ballX+ ballDX*dt
-        ballY = ballY+ballDY*dt
+        ball:update(dt)
     end
 end
 
@@ -66,11 +72,7 @@ function love.keypressed(key)
             gamestate = 'play'
         elseif gamestate == 'play' then
             gamestate = 'start'
-            ballX = VIRTUAL_WIDTH/2-2
-            ballY = VIRTUAL_HEIGHT/2-2
-
-            ballDX = math.random(2) == 1 and -100 or 100
-            ballDY= math.random(-50,50)
+            ball:reset()
         end
     end
 end
@@ -79,9 +81,10 @@ function love.draw()
     push:apply('start')
     love.graphics.clear(40/255,45/255,52/255,1)
 
-    love.graphics.rectangle('fill',ballX,ballY,5,5)
-    love.graphics.rectangle('fill',5,player1Y,5,20)
-    love.graphics.rectangle('fill',VIRTUAL_WIDTH-10, player2Y,5,20)
+    ball:render()
+    displayFPS()
+    paddle1:render()
+    paddle2:render()
     love.graphics.setFont(smallfont)
     if gamestate == 'start' then
         love.graphics.printf("Ponq", 0, 20, VIRTUAL_WIDTH, 'center')
@@ -89,7 +92,17 @@ function love.draw()
         love.graphics.printf("Score", 0, 20, VIRTUAL_WIDTH, 'center')
     end
         love.graphics.setFont(scorefont)
-    love.graphics.print(player1Score, VIRTUAL_WIDTH /2 -50, VIRTUAL_HEIGHT/3)
-    love.graphics.print(player2Score,VIRTUAL_WIDTH /2 +30,VIRTUAL_HEIGHT/3)
+    love.graphics.print(player1Score, VIRTUAL_WIDTH /2 -50, 20-15)
+    love.graphics.print(player2Score,VIRTUAL_WIDTH /2 +30,20-15)
+
+    
+
     push:apply('end')
+end
+
+function displayFPS()
+    love.graphics.setColor(0,255/255,255/255,255/255)
+    love.graphics.setFont(smallfont)
+    love.graphics.print('FPS:' .. tostring(love.timer.getFPS()),10,10)
+    love.graphics.setColor(1,1,1,1)
 end

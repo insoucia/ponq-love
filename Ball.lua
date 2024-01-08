@@ -6,10 +6,21 @@ function Ball:init(x,y,width,height)
     self.width = width
     self.height = height
 
-    self.dx =math.random(2) == 1 and 100 or -100
+    self.dx =math.random(2) == 1 and 300 or -300
     self.dy =math.random(-50,50) 
 end
 
+function Ball:collides(Paddle)
+    if self.x > Paddle.x + Paddle.width or self.x + self.width < Paddle.x then
+        return false
+    end
+
+    if self.y > Paddle.y + Paddle.height or self.y +self.height < Paddle.y then
+        return false
+    end
+
+    return true
+end
 
 
 function Ball:reset()

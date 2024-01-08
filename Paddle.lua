@@ -7,6 +7,7 @@ function Paddle:init(x,y,width,height)
     self.height = height
     
     self.dy = 0
+
 end
 function Paddle:update(dt)
     if self.dy < 0 then
